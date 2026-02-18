@@ -32,7 +32,8 @@ def generate_curriculum(topic):
     Course Name:
     Level: (Advanced)
     topic : (upto 3 topics)
-    learning outcome for the course and relatable job roles: (upto 2 lines ) 
+    learning outcome for the course: (upto 2 lines )
+    relatable job roles: (upto 2 roles)
     Duration for the course: (in weeks)
 
     Constraints:

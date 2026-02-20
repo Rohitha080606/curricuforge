@@ -1,3 +1,9 @@
 flask
 openai
 python-dotenv
+streamlit
+numpy
+huggingface-hub
+sentence-transformers
+PyMuPDF
+lancedb

@@ -334,9 +334,16 @@ elif mode == "Document-Based (RAG)":
             )
 
             st.session_state.generated_output = response.choices[0].message.content
+
+# ==================================================
+# 📘 Generated Curriculum
+# ==================================================
+
 if "generated_output" in st.session_state and st.session_state.generated_output:
+
+    st.markdown("## 📘 Generated Curriculum")
     st.markdown(st.session_state.generated_output)
-if "generated_output" in st.session_state and st.session_state.generated_output:
+
     clean_text = clean_markdown(st.session_state.generated_output)
     pdf_file = generate_pdf(clean_text)
 
@@ -346,3 +353,89 @@ if "generated_output" in st.session_state and st.session_state.generated_output:
         file_name="Curriculum.pdf",
         mime="application/pdf"
     )
+# ==================================================
+# 📍 Career Roadmap Generator
+# ==================================================
+
+if "generated_output" in st.session_state and st.session_state.generated_output:
+
+    st.divider()
+    st.subheader("📍 AI Career Roadmap")
+
+    if st.button("Generate 1-Year Career Roadmap"):
+
+        with st.spinner("Generating roadmap..."):
+
+            roadmap_prompt = f"""
+            Based on the following curriculum:
+
+            {st.session_state.generated_output}
+
+            Generate a structured 1-year career roadmap.
+
+            Requirements:
+            - Divide into 4 clear phases
+            - Include skills to focus on
+            - Include practical projects
+            - Include career milestones
+            - Keep response concise and structured
+            """
+
+            response = client.chat_completion(
+                model="meta-llama/Meta-Llama-3-8B-Instruct",
+                messages=[{"role": "user", "content": roadmap_prompt}],
+                max_tokens=800,
+                temperature=0.4
+            )
+
+            roadmap_output = response.choices[0].message.content
+
+        st.markdown("### 🚀 Your 1-Year Roadmap")
+        st.markdown(roadmap_output)
+# ==================================================
+    # 💬 AI Mentor Chatbot (Bottom Section)
+    # ==================================================
+
+    st.divider()
+    st.markdown("## 💬 AI Mentor")
+
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = []
+
+    for role, message in st.session_state.chat_history:
+        with st.chat_message(role):
+            st.markdown(message)
+
+    user_question = st.chat_input("Ask anything about this curriculum...")
+
+    if user_question:
+
+        st.session_state.chat_history.append(("user", user_question))
+
+        with st.spinner("Thinking..."):
+
+            chat_prompt = f"""
+            You are an academic AI mentor.
+
+            Curriculum:
+            {st.session_state.generated_output}
+
+            Question:
+            {user_question}
+
+            Give a concise and structured response.
+            """
+
+            response = client.chat_completion(
+                model="meta-llama/Meta-Llama-3-8B-Instruct",
+                messages=[{"role": "user", "content": chat_prompt}],
+                max_tokens=400,
+                temperature=0.3
+            )
+
+            answer = response.choices[0].message.content
+
+        st.session_state.chat_history.append(("assistant", answer))
+
+        with st.chat_message("assistant"):
+            st.markdown(answer)
